@@ -1,95 +1,69 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { io } from "socket.io-client";
+import { useState } from "react";
+import ChatPage from "@/component/chat-page";
+import { Box, Button, Center, Input } from "@yamada-ui/react";
 
 export default function Home() {
+  const [showChat, setShowChat] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [showSpinner, setShowSpinner] = useState(false);
+  const [roomId, setroomId] = useState("");
+
+  const socket = io({ autoConnect: false });
+
+  const handleJoin = async () => {
+    if (userName !== "" && roomId !== "") {
+      console.log(userName, "userName", roomId, "roomId");
+      setShowSpinner(true);
+      setShowChat(true);
+      setShowSpinner(false);
+    } else {
+      alert("Please fill in Username and Room Id");
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box>
+      {
+        !showChat ? (
+          <Center
+            w="100vw"
+            h="100vh"
+            flexDir="column"
+            gap="md"
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            <Input
+              w="xs"
+              h="7xs"
+              p="1"
+              type="text"
+              placeholder="Username"
+              onChange={(e) => setUserName(e.target.value)}
+              isDisabled={showSpinner}
             />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            <Input
+              w="xs"
+              h="7xs"
+              p="1"
+              type="text"
+              placeholder="room id"
+              onChange={(e) => setroomId(e.target.value)}
+              isDisabled={showSpinner}
+            />
+            <Button
+              isLoading={showSpinner}
+              w="xs"
+              h="7xs"
+              onClick={() => handleJoin()}
+            >
+              Join
+            </Button>
+          </Center>
+        ) : (
+          <ChatPage socket={socket} roomId={roomId} username={userName} />
+        )
+      }
+    </Box>
   );
 }
