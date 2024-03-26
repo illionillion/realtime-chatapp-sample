@@ -98,19 +98,23 @@ const ChatPage = ({ socket, username, roomId }: { socket: Socket, username: stri
                 </Box>
                 <Box>
                     <form onSubmit={(e) => sendData(e)}>
-                        <Input
-                            type="text"
-                            value={currentMsg}
-                            onChange={(e) => setCurrentMsg(e.target.value)}
-                            placeholder="Type your message.."
-                            w="xs"
-                            h="7xs"
-                            p="1"
-                        />
-                        <Button
-                            type="submit"
-                            h="7xs"
-                        >Send</Button>
+                        <Center>
+                            <Input
+                                type="text"
+                                value={currentMsg}
+                                onChange={(e) => setCurrentMsg(e.target.value)}
+                                placeholder="Type your message.."
+                                w="xs"
+                                p="1"
+                                borderTopRightRadius={0}
+                                borderBottomRightRadius={0}
+                            />
+                            <Button
+                                type="submit"
+                                borderTopLeftRadius={0}
+                                borderBottomLeftRadius={0}
+                            >Send</Button>
+                        </Center>
                     </form>
                 </Box>
             </Box>
