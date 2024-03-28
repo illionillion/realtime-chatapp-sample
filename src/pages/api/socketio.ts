@@ -34,6 +34,17 @@ export default function socketHandler(
   io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
     socket.on("join_room", (roomId) => {
+      // const room = socket.handshake.query.roomId;
+      const roomSize = io.sockets.adapter.rooms.get(roomId)?.size;
+      // console.log(`${roomId} has ${roomSize} member`);
+      
+      if (roomSize && roomSize >= 2) {
+        // ルーム人数が2人以上の場合は参加を拒否
+        socket.emit("join_room_error", "The room is full.");
+        console.log("The room is full.");
+        return;
+      }
+
       socket.join(roomId);
       console.log(`user with id-${socket.id} joined room - ${roomId}`);
     });

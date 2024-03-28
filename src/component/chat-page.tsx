@@ -1,7 +1,7 @@
 "use client"
 import { FormEvent, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
-import { Box, Button, Center, Flex, Heading, Input, Text } from "@yamada-ui/react";
+import { Box, Button, Center, Flex, Heading, Input, Text, useBoolean } from "@yamada-ui/react";
 
 interface IMsgDataTypes {
     roomId: string | number;
@@ -13,10 +13,11 @@ interface IMsgDataTypes {
 const ChatPage = ({ socket, username, roomId }: { socket: Socket, username: string, roomId: string | number }) => {
     const [currentMsg, setCurrentMsg] = useState("");
     const [chat, setChat] = useState<IMsgDataTypes[]>([]);
+    const [isError, {on: isErrorTrue}] = useBoolean(false)
 
     const sendData = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (currentMsg !== "") {
+        if (currentMsg !== "" && !isError) {
             const msgData: IMsgDataTypes = {
                 roomId,
                 user: username,
@@ -44,7 +45,16 @@ const ChatPage = ({ socket, username, roomId }: { socket: Socket, username: stri
                 }
                 // socket.ioサーバに接続
                 socket.connect();
+                // joinできなかった時のエラー取得
+                socket.on("join_room_error", (data: string) => {
+                    console.log(data);
+                    // socket.off('connect');
+                    // socket.off('receive_msg');
+                    isErrorTrue()
+                });
+                // join
                 socket.emit("join_room", roomId);
+                // メッセージ受け取り
                 socket.on("receive_msg", (data: IMsgDataTypes) => {
                     setChat((pre) => [...pre, data]);
                 });
@@ -53,7 +63,7 @@ const ChatPage = ({ socket, username, roomId }: { socket: Socket, username: stri
         return () => {
             // 登録したイベントは全てクリーンアップ
             socket.off('connect');
-            socket.off('send_msg');
+            socket.off('receive_msg');
         };
     }, [socket]);
 
