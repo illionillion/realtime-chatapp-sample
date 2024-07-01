@@ -55,7 +55,7 @@ export default function Home() {
               isLoading={showSpinner}
               w="xs"
               h="7xs"
-              onClick={() => handleJoin()}
+              onClick={handleJoin}
             >
               Join
             </Button>

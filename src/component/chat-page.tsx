@@ -107,7 +107,7 @@ const ChatPage = ({ socket, username, roomId }: { socket: Socket, username: stri
                     ))}
                 </Box>
                 <Box>
-                    <form onSubmit={(e) => sendData(e)}>
+                    <form onSubmit={sendData}>
                         <Center>
                             <Input
                                 type="text"
